@@ -1,20 +1,16 @@
-// 状态管理函数 | 接受 状态 | 参数(包含类型&替换值)
-// 该取回真正的名字了
-function reducer (state, action) {
 // 传入对象 | 2子对象 | 
-  // 如果没有传入，那么自己初始一个状态并返回
-  if(!state){
-    return {
-      title: {
-        text: 'React.js 小书',
-        color: 'red',
-      },
-      content: {
-        text: 'React.js 小书内容',
-        color: 'blue'
-      }
-    }
+const appState = {
+  title: {
+    text: 'React.js 小书',
+    color: 'red',
+  },
+  content: {
+    text: 'React.js 小书内容',
+    color: 'blue'
   }
+}
+// 状态管理函数 | 接受 状态 | 参数(包含类型&替换值)
+function stateChanger (state, action) {
   //匹配类型
   switch (action.type) {
     case 'UPDATE_TITLE_TEXT':
@@ -41,25 +37,22 @@ function reducer (state, action) {
       return state
   }
 }
-// 仓库函数 接受 => 状态管理函数 
-function createStore (reducer) {
-  //先初始化先
-  let state = null
-  //创建个空数组
+// 仓库函数 接受 状态 | 状态管理函数
+function createStore (state, stateChanger) {
+  //创建一个数组
   const listeners = []
-  //观察者模式函数 传入一函数参数，推入上面数组
+  //观察者模式函数 传入一函数参数，然后推入上面数组
   const subscribe = (listener) => listeners.push(listener)
-  //返回 获取状态 方法
+  //返回的 获取状态 方法
   const getState = () => state
-  //放回派遣 方法 | 传入动作参数(类型匹配 | 要改的值)
+  //放回的派遣 方法 | 传入动作参数(类型匹配 | 要改的值)
   const dispatch = (action) => {
     //覆盖原对象
-    state = reducer(state, action)
+    state = stateChanger(state, action)
     //遍历数组,执行监听函数
     listeners.forEach((listener) => listener())
   }
-  //首次初始化状态并渲染
-  dispatch({})
+  //返回
   return { getState, dispatch, subscribe }
 }
 function renderApp (newAppState, oldAppState = {}) {
@@ -84,13 +77,13 @@ function renderContent (newContent, oldContent = {}) {
   contentDOM.style.color = newContent.color
 }
 
-//导出-。-
-const store = createStore(reducer)
-//第一次初始状态null
+//设置变量
+const store = createStore(appState, stateChanger)
+//旧状态保留
 let oldState = store.getState()
-//传入观察者函数
+//传入函数
 store.subscribe(() => {
-  //新状态 第一次也是初始化
+  //新状态
   const newState = store.getState()
   //执行(对比新旧状态进行渲染)
   renderApp(newState, oldState)
