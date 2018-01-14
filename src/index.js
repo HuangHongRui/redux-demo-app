@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import Header from './Header'
 import Content from './Content'
+import { Provider } from './react-redux'
 
 const createStore = (reducer) => {
   let state = null
@@ -35,12 +36,6 @@ const themeReducer = (state, action) => {
 const store = createStore(themeReducer)
 
 class Index extends Component {
-  static childContextTypes = {
-    store : PropTypes.object
-  }
-  getChildContext() {
-    return { store }
-  }
   render() {
     return (
       <div>
@@ -52,7 +47,10 @@ class Index extends Component {
 }
 
 ReactDOM.render(
-  <Index/>,
+  //将状态提升至最顶根目录
+  <Provider store = {store}>
+    <Index/>
+  </Provider>,
   document.getElementById('root')
 )
 
